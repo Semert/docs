@@ -730,6 +730,70 @@ const sidebars: SidebarsConfig = {
             },
             {
               type: 'category',
+              label: 'Infrastructure Deployment',
+              link: {
+                type: 'doc',
+                id: 'admin/deployment/infrastructure-deployment/infrastructure-deployment-overview',
+              },
+              collapsed: true,
+              items: [
+                'admin/deployment/infrastructure-deployment/infrastructure-deployment-kubernetes',
+                'admin/deployment/infrastructure-deployment/infrastructure-deployment-on-vm',
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Platform Deployment',
+              link: {
+                type: 'doc',
+                id: 'admin/deployment/platform-deployment/platform-deployment-overview',
+              },
+              collapsed: true,
+              items: [
+                {
+                  type: 'category',
+                  label: 'Automated Deployment',
+                  link: {
+                    type: 'doc',
+                    id: 'admin/deployment/platform-deployment/automated/platform-automated-overview',
+                  },
+                  collapsed: true,
+                  items: [
+                    'admin/deployment/platform-deployment/automated/platform-automated-kubernetes',
+                  ],
+                },
+                {
+                  type: 'category',
+                  label: 'Manual Deployment',
+                  link: {
+                    type: 'doc',
+                    id: 'admin/deployment/platform-deployment/manual/platform-manual-overview',
+                  },
+                  collapsed: true,
+                  items: [
+                    {
+                      type: 'category',
+                      label: 'Kubernetes',
+                      link: {
+                        type: 'doc',
+                        id: 'admin/deployment/platform-deployment/manual/kubernetes/platform-manual-kubernetes-overview',
+                      },
+                      collapsed: true,
+                      items: [
+                        'admin/deployment/platform-deployment/manual/kubernetes/k8s-components',
+                        'admin/deployment/platform-deployment/manual/kubernetes/data-layer',
+                        'admin/deployment/platform-deployment/manual/kubernetes/security-and-identity',
+                        'admin/deployment/platform-deployment/manual/kubernetes/plugin-engine',
+                        'admin/deployment/platform-deployment/manual/kubernetes/core-components',
+                        'admin/deployment/platform-deployment/manual/kubernetes/observability',
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'category',
               label: 'Extensions',
               link: {
                 type: 'doc',
