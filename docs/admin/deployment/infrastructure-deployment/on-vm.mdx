@@ -4,7 +4,7 @@ title: On-VM Infrastructure Deployment
 sidebar_label: On VM
 sidebar_position: 3
 pagination_prev: admin/deployment/infrastructure-deployment/infrastructure-deployment-kubernetes
-pagination_next: admin/deployment/platform-deployment/manual/on-vm
+pagination_next: admin/deployment/platform-deployment/automated/on-vm
 ---
 
 import Tabs from '@theme/Tabs';
@@ -500,7 +500,7 @@ aws ssm get-parameter \
 chmod 600 codemie-key.pem
 ```
 
-After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/manual/on-vm) to deploy the CodeMie stack.
+After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
 
 </TabItem>
 <TabItem value="gcp" label="GCP">
@@ -571,7 +571,7 @@ terraform output instance_name
 terraform output zone
 ```
 
-After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/manual/on-vm) to deploy the CodeMie stack.
+After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
 
 </TabItem>
 <TabItem value="azure" label="Azure">
@@ -672,7 +672,7 @@ terraform output azure_client_id
 terraform output azure_client_secret
 ```
 
-After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/manual/on-vm) to deploy the CodeMie stack.
+After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
 
 </TabItem>
 </Tabs>
@@ -681,4 +681,4 @@ After completing infrastructure provisioning, proceed to [Application Provisioni
 
 ## Next Steps
 
-Infrastructure provisioning is complete. Proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/manual/on-vm) to deploy the CodeMie stack onto the provisioned VM.
+Infrastructure provisioning is complete. Proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack onto the provisioned VM.

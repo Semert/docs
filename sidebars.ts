@@ -760,6 +760,7 @@ const sidebars: SidebarsConfig = {
                   collapsed: true,
                   items: [
                     'admin/deployment/platform-deployment/automated/platform-automated-kubernetes',
+                    'admin/deployment/platform-deployment/automated/on-vm',
                   ],
                 },
                 {
@@ -788,7 +789,6 @@ const sidebars: SidebarsConfig = {
                         'admin/deployment/platform-deployment/manual/kubernetes/observability',
                       ],
                     },
-                    'admin/deployment/platform-deployment/manual/on-vm',
                   ],
                 },
               ],

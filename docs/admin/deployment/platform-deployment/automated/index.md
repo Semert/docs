@@ -15,9 +15,10 @@ Scripted deployment is recommended for standard installations as it automates co
 
 ## Deployment Tracks
 
-| Track                              | Description                                                             |
-| ---------------------------------- | ----------------------------------------------------------------------- |
-| [**Kubernetes**](./kubernetes.mdx) | Deploy all components onto an EKS / GKE / AKS cluster using Helm charts |
+| Track                              | Description                                                                         |
+| ---------------------------------- | ----------------------------------------------------------------------------------- |
+| [**Kubernetes**](./kubernetes.mdx) | Deploy all components onto an EKS / GKE / AKS cluster using Helm charts             |
+| [**On VM**](./on-vm.mdx)           | Deploy the CodeMie stack onto a provisioned VM using the `./deploy.sh --byo` script |
 
 ## Script Modes
 

@@ -14,9 +14,95 @@ import FeatureGrid from '@site/src/components/FeatureGrid';
 
 # Deployment Guides
 
-Welcome to the AI/Run CodeMie deployment guides. Choose your cloud provider to get started with deploying CodeMie in your environment.
+Welcome to the AI/Run CodeMie deployment guides. A full deployment follows four phases: provision infrastructure, deploy the platform, configure your installation, then maintain and secure it.
 
-## Kubernetes Deployments
+## Infrastructure Deployment
+
+Provision the cloud infrastructure required to run CodeMie — Kubernetes clusters or virtual machines, networking, storage, and databases — using Terraform. Supports AWS, GCP, and Azure.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/server.svg"
+    iconType="image"
+    title="Infrastructure Deployment"
+    description="Provision Kubernetes clusters, VMs, networking, storage, and databases using Terraform for AWS, GCP, or Azure."
+    link="/admin/deployment/infrastructure-deployment/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
+
+## Platform Deployment
+
+Deploy AI/Run CodeMie application components onto the provisioned infrastructure. Choose between automated scripted installation or step-by-step manual control.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/cloud-data.svg"
+    iconType="image"
+    title="Platform Deployment"
+    description="Deploy CodeMie components using automated Helm scripts or manual chart-by-chart installation for Kubernetes and On VM environments."
+    link="/admin/deployment/platform-deployment/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
+
+## Configuration
+
+Configure authentication, integrations, observability, and API settings for your CodeMie installation after deployment.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/configure.svg"
+    iconType="image"
+    title="Configuration Guide"
+    description="Configure CodeMie authentication, integrations, observability, API settings, and optional extensions."
+    link="/admin/configuration/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
+
+## Update
+
+Keep your CodeMie installation up to date by following the recommended upgrade procedure.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/refresh.svg"
+    iconType="image"
+    title="Update Guide"
+    description="Upgrade CodeMie platform and third-party components following the recommended step-by-step procedure."
+    link="/admin/update/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
+
+## Security & Compliance
+
+Review security requirements, network policies, role-based access control, and compliance guidelines for your CodeMie installation.
+
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/protect.svg"
+    iconType="image"
+    title="Security & Compliance"
+    description="Network policies, RBAC, data processing requirements, and security best practices for CodeMie deployments."
+    link="/admin/security/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
+
+---
+
+## Cloud-Specific Guides
+
+The guides below provide cloud-specific deployment workflows maintained for reference.
+
+### Kubernetes Deployments
 
 <FeatureGrid>
   <FeatureCard
@@ -45,7 +131,7 @@ Welcome to the AI/Run CodeMie deployment guides. Choose your cloud provider to g
   />
 </FeatureGrid>
 
-## VM Deployments
+### VM Deployments
 
 <FeatureGrid>
   <FeatureCard
@@ -74,7 +160,7 @@ Welcome to the AI/Run CodeMie deployment guides. Choose your cloud provider to g
   />
 </FeatureGrid>
 
-## Marketplace
+### Marketplace
 
 <FeatureGrid>
   <FeatureCard
@@ -89,7 +175,7 @@ Welcome to the AI/Run CodeMie deployment guides. Choose your cloud provider to g
   <div style={{ visibility: 'hidden' }} />
 </FeatureGrid>
 
-## Additional Resources
+### Additional Resources
 
 <FeatureGrid>
   <FeatureCard
