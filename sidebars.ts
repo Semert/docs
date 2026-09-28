@@ -788,6 +788,7 @@ const sidebars: SidebarsConfig = {
                         'admin/deployment/platform-deployment/manual/kubernetes/observability',
                       ],
                     },
+                    'admin/deployment/platform-deployment/manual/on-vm',
                   ],
                 },
               ],

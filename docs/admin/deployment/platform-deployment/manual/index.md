@@ -20,10 +20,11 @@ If you prefer automated deployment, see [Automated Deployment](../automated/inde
 | Track                                    | Description                                                                                          |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | [**Kubernetes**](./kubernetes/index.mdx) | Manually install each component onto an EKS / GKE / AKS cluster using individual Helm chart commands |
+| [**On VM**](./on-vm)                     | Deploy the CodeMie stack via BYO mode onto a VM provisioned by manual Terraform phases               |
 
-## Component Installation Order
+## Kubernetes Component Installation Order
 
-Components must be installed in the following order to satisfy dependencies:
+For Kubernetes, components must be installed in the following order to satisfy dependencies:
 
 1. [Kubernetes Components](./kubernetes/k8s-components.mdx) — Storage Class + Nginx Ingress
 2. [Data Layer](./kubernetes/data-layer.mdx) — Elasticsearch
