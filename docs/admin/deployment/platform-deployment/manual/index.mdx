@@ -5,6 +5,9 @@ sidebar_label: Manual Deployment
 sidebar_position: 1
 ---
 
+import FeatureCard from '@site/src/components/FeatureCard';
+import FeatureGrid from '@site/src/components/FeatureGrid';
+
 # Manual Platform Deployment
 
 Manual deployment installs each AI/Run CodeMie component individually using Helm charts, giving you granular control over configuration and installation order.
@@ -12,14 +15,22 @@ Manual deployment installs each AI/Run CodeMie component individually using Helm
 :::info When to Use Manual Deployment
 Use manual deployment when you need fine-grained control over individual component configuration, want to selectively deploy certain components, or are troubleshooting specific services.
 
-If you prefer automated deployment, see [Automated Deployment](../automated/index.md) instead.
+If you prefer automated deployment, see [Automated Deployment](../automated/) instead.
 :::
 
 ## Deployment Tracks
 
-| Track                                    | Description                                                                                          |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| [**Kubernetes**](./kubernetes/index.mdx) | Manually install each component onto an EKS / GKE / AKS cluster using individual Helm chart commands |
+<FeatureGrid>
+  <FeatureCard
+    icon="/img/icons/cloud-data.svg"
+    iconType="image"
+    title="Kubernetes"
+    description="Manually install each component onto an EKS / GKE / AKS cluster using individual Helm chart commands in the correct dependency order."
+    link="/admin/deployment/platform-deployment/manual/kubernetes/"
+  />
+  <div style={{ visibility: 'hidden' }} />
+  <div style={{ visibility: 'hidden' }} />
+</FeatureGrid>
 
 ## Kubernetes Component Installation Order
 

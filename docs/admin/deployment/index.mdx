@@ -14,11 +14,9 @@ import FeatureGrid from '@site/src/components/FeatureGrid';
 
 # Deployment Guides
 
-Welcome to the AI/Run CodeMie deployment guides. A full deployment follows four phases: provision infrastructure, deploy the platform, configure your installation, then maintain and secure it.
+Welcome to the AI/Run CodeMie deployment guides. A complete deployment follows three phases: provision infrastructure, deploy the platform, then configure your installation. Use the maintenance section to keep it up to date and secure.
 
-## Infrastructure Deployment
-
-Provision the cloud infrastructure required to run CodeMie — Kubernetes clusters or virtual machines, networking, storage, and databases — using Terraform. Supports AWS, GCP, and Azure.
+## Installation & Configuration
 
 <FeatureGrid>
   <FeatureCard
@@ -28,45 +26,23 @@ Provision the cloud infrastructure required to run CodeMie — Kubernetes cluste
     description="Provision Kubernetes clusters, VMs, networking, storage, and databases using Terraform for AWS, GCP, or Azure."
     link="/admin/deployment/infrastructure-deployment/"
   />
-  <div style={{ visibility: 'hidden' }} />
-  <div style={{ visibility: 'hidden' }} />
-</FeatureGrid>
-
-## Platform Deployment
-
-Deploy AI/Run CodeMie application components onto the provisioned infrastructure. Choose between automated scripted installation or step-by-step manual control.
-
-<FeatureGrid>
   <FeatureCard
     icon="/img/icons/cloud-data.svg"
     iconType="image"
     title="Platform Deployment"
-    description="Deploy CodeMie components using automated Helm scripts or manual chart-by-chart installation for Kubernetes and On VM environments."
+    description="Deploy CodeMie application components using automated Helm scripts or manual chart-by-chart installation."
     link="/admin/deployment/platform-deployment/"
   />
-  <div style={{ visibility: 'hidden' }} />
-  <div style={{ visibility: 'hidden' }} />
-</FeatureGrid>
-
-## Configuration
-
-Configure authentication, integrations, observability, and API settings for your CodeMie installation after deployment.
-
-<FeatureGrid>
   <FeatureCard
     icon="/img/icons/configure.svg"
     iconType="image"
     title="Configuration Guide"
-    description="Configure CodeMie authentication, integrations, observability, API settings, and optional extensions."
+    description="Configure authentication, integrations, observability, and API settings for your CodeMie installation."
     link="/admin/configuration/"
   />
-  <div style={{ visibility: 'hidden' }} />
-  <div style={{ visibility: 'hidden' }} />
 </FeatureGrid>
 
-## Update
-
-Keep your CodeMie installation up to date by following the recommended upgrade procedure.
+## Maintenance
 
 <FeatureGrid>
   <FeatureCard
@@ -76,15 +52,6 @@ Keep your CodeMie installation up to date by following the recommended upgrade p
     description="Upgrade CodeMie platform and third-party components following the recommended step-by-step procedure."
     link="/admin/update/"
   />
-  <div style={{ visibility: 'hidden' }} />
-  <div style={{ visibility: 'hidden' }} />
-</FeatureGrid>
-
-## Security & Compliance
-
-Review security requirements, network policies, role-based access control, and compliance guidelines for your CodeMie installation.
-
-<FeatureGrid>
   <FeatureCard
     icon="/img/icons/protect.svg"
     iconType="image"
@@ -92,7 +59,6 @@ Review security requirements, network policies, role-based access control, and c
     description="Network policies, RBAC, data processing requirements, and security best practices for CodeMie deployments."
     link="/admin/security/"
   />
-  <div style={{ visibility: 'hidden' }} />
   <div style={{ visibility: 'hidden' }} />
 </FeatureGrid>
 
