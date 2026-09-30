@@ -53,16 +53,6 @@ Installing components out of order will cause deployment failures. Always follow
 - [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI, `aws` CLI
 
 </TabItem>
-<TabItem value="gcp" label="GCP">
-
-- [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../../infrastructure-deployment/kubernetes.mdx) phase
-- [ ] **Cluster Access**: Connected to Bastion Host (private cluster) or `kubectl` configured for GKE
-- [ ] **Container Registry**: `gcp-artifact-registry` pull secret exists
-- [ ] **Helm Installed**: Helm 3.16.0+
-- [ ] **Repository Cloned**: `codemie-helm-charts` available locally
-- [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI
-
-</TabItem>
 <TabItem value="azure" label="Azure">
 
 - [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../../infrastructure-deployment/kubernetes.mdx) phase
@@ -72,6 +62,16 @@ Installing components out of order will cause deployment failures. Always follow
 - [ ] **Repository Cloned**: `codemie-helm-charts` available locally
 - [ ] **Deployment Outputs**: Have `deployment_outputs.env` from infrastructure deployment
 - [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI, `az` CLI
+
+</TabItem>
+<TabItem value="gcp" label="GCP">
+
+- [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../../infrastructure-deployment/kubernetes.mdx) phase
+- [ ] **Cluster Access**: Connected to Bastion Host (private cluster) or `kubectl` configured for GKE
+- [ ] **Container Registry**: `gcp-artifact-registry` pull secret exists
+- [ ] **Helm Installed**: Helm 3.16.0+
+- [ ] **Repository Cloned**: `codemie-helm-charts` available locally
+- [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI
 
 </TabItem>
 </Tabs>
@@ -105,6 +105,14 @@ find . -name "values-aws.yaml" -exec sed -i "s/%%DOMAIN%%/${CODEMIE_DOMAIN_NAME}
 ```
 
 </TabItem>
+<TabItem value="azure" label="Azure">
+
+```bash
+CODEMIE_DOMAIN_NAME="airun.example.com"
+find . -name "values-azure.yaml" -exec sed -i "s/private.lab.com/$CODEMIE_DOMAIN_NAME/g" {} \;
+```
+
+</TabItem>
 <TabItem value="gcp" label="GCP">
 
 ```bash
@@ -125,14 +133,6 @@ Also create the GCP service account key file:
 2. Locate the `codemie-gsa` service account
 3. Create and download a new JSON key
 4. Save as `codemie-helm-charts/codemie-gsa-key.json`
-
-</TabItem>
-<TabItem value="azure" label="Azure">
-
-```bash
-CODEMIE_DOMAIN_NAME="airun.example.com"
-find . -name "values-azure.yaml" -exec sed -i "s/private.lab.com/$CODEMIE_DOMAIN_NAME/g" {} \;
-```
 
 </TabItem>
 </Tabs>

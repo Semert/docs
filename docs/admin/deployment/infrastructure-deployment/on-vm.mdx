@@ -14,6 +14,11 @@ import TabItem from '@theme/TabItem';
 
 This guide covers deploying AI/Run CodeMie on a single virtual machine using Docker Compose. All three cloud providers are supported: AWS (EC2), GCP (Compute Engine), and Azure (VM).
 
+This guide covers two deployment methods:
+
+- [**Scripted Deployment**](#scripted-deployment) - Automated shell script handles all Terraform phases in sequence
+- [**Manual Deployment**](#manual-deployment) - Step-by-step Terraform commands for full control over each phase
+
 The `deploy.sh` script handles the full lifecycle: Terraform provisions cloud resources (VM, storage, networking, DNS), and Docker Compose brings up the CodeMie application stack on the provisioned VM.
 
 :::tip Recommended Approach
@@ -22,38 +27,7 @@ Scripted deployment is the recommended method as it handles prerequisite checks,
 
 ## Prerequisites
 
-<Tabs groupId="cloud-provider">
-  <TabItem value="aws" label="AWS">
-
-- [ ] **AWS Access**: Programmatic access with IAM permissions
-- [ ] **Tools Installed**: Terraform 1.15.x, AWS CLI, jq, openssl, envsubst, session-manager-plugin
-- [ ] **AWS Authentication**: Configured AWS credentials
-- [ ] **Repository Access**: Cloned [codemie-on-vm](https://gitbud.epam.com/epm-cdme/codemie-on-vm)
-- [ ] **GCP Registry Key**: `key.json` file available
-
-</TabItem>
-
-  <TabItem value="gcp" label="GCP">
-
-- [ ] **GCP Access**: Active project with required IAM roles
-- [ ] **Tools Installed**: Terraform 1.15.x, gcloud CLI, jq, openssl, envsubst
-- [ ] **GCP Authentication**: `gcloud auth application-default login` completed
-- [ ] **Repository Access**: Cloned [codemie-on-vm](https://gitbud.epam.com/epm-cdme/codemie-on-vm)
-- [ ] **GCP Registry Key**: `key.json` file available
-
-</TabItem>
-
-  <TabItem value="azure" label="Azure">
-
-- [ ] **Azure Access**: Active subscription with Contributor role
-- [ ] **Tools Installed**: Terraform 1.15.x, Azure CLI, jq, openssl, envsubst
-- [ ] **Azure Authentication**: `az login` completed, subscription set
-- [ ] **Repository Access**: Cloned [codemie-on-vm](https://gitbud.epam.com/epm-cdme/codemie-on-vm)
-- [ ] **GCP Registry Key**: `key.json` file available
-
-</TabItem>
-
-  </Tabs>
+Before you begin, make sure you have completed all the requirements described in the [On-VM Deployment Prerequisites](../prerequisites.mdx#on-vm-deployment-prerequisites) section — account access, deployment machine tools, GCP Container Registry access (`key.json`), cloud authentication, and repository access for your chosen cloud provider.
 
 ---
 
@@ -142,41 +116,6 @@ COMPOSE_PROFILE="enterprise"
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-```bash
-cp deployment.conf.gcp.example deployment.conf
-```
-
-Edit `deployment.conf`:
-
-```bash
-CLOUD_PROVIDER="gcp"
-
-# GCP
-TF_VAR_project_id=""
-TF_VAR_region="europe-west3"
-TF_VAR_zone_suffix="a"
-
-# Terraform State
-TF_VAR_states_bucket_name=""
-
-# Platform
-TF_VAR_platform_name="codemie"
-
-# VM
-TF_VAR_machine_type="n2-highmem-4"   # 4 vCPU, 32 GB RAM
-TF_VAR_disk_size=100
-
-# Domain & Private DNS (optional)
-TF_VAR_platform_domain_name=""
-
-# CodeMie
-CODEMIE_VERSION="2.26.0"
-COMPOSE_PROFILE="enterprise"
-```
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 ```bash
@@ -212,6 +151,41 @@ DEPLOY_AI_MODELS="true"
 ```
 
   </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+```bash
+cp deployment.conf.gcp.example deployment.conf
+```
+
+Edit `deployment.conf`:
+
+```bash
+CLOUD_PROVIDER="gcp"
+
+# GCP
+TF_VAR_project_id=""
+TF_VAR_region="europe-west3"
+TF_VAR_zone_suffix="a"
+
+# Terraform State
+TF_VAR_states_bucket_name=""
+
+# Platform
+TF_VAR_platform_name="codemie"
+
+# VM
+TF_VAR_machine_type="n2-highmem-4"   # 4 vCPU, 32 GB RAM
+TF_VAR_disk_size=100
+
+# Domain & Private DNS (optional)
+TF_VAR_platform_domain_name=""
+
+# CodeMie
+CODEMIE_VERSION="2.26.0"
+COMPOSE_PROFILE="enterprise"
+```
+
+  </TabItem>
 </Tabs>
 
 ### Step 4: Authenticate with Cloud Provider
@@ -229,16 +203,6 @@ aws sts get-caller-identity
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-```bash
-gcloud auth application-default login
-
-# Verify active project:
-gcloud config get-value project
-```
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 ```bash
@@ -247,6 +211,16 @@ az account set --subscription "<AZURE_SUBSCRIPTION_ID>"
 
 # Verify:
 az account show
+```
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+```bash
+gcloud auth application-default login
+
+# Verify active project:
+gcloud config get-value project
 ```
 
   </TabItem>
@@ -281,22 +255,6 @@ The script pauses twice for approval: remote backend Terraform plan and platform
 :::
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-| Phase                          | Description                                                      |
-| ------------------------------ | ---------------------------------------------------------------- |
-| Loading config                 | Validates `deployment.conf` variables                            |
-| Checking prerequisites         | Verifies required tools are installed                            |
-| Verifying GCP credentials      | Confirms valid `gcloud` session and project                      |
-| Initializing Terraform backend | Creates GCS bucket for Terraform state                           |
-| Running platform Terraform     | Plans and applies VM, GCS bucket, Cloud KMS key, DNS, firewall   |
-| Reading Terraform outputs      | Fetches VM private IP, GCS bucket name, KMS key ID               |
-| Generating .env                | Creates secrets and renders Docker Compose environment           |
-| Provisioning VM                | Installs Docker, syncs files, starts services via IAP SSH tunnel |
-| Writing outputs                | Saves credentials to `deployment_outputs.env`                    |
-| Deployment summary             | Prints URL, SSH command, credentials                             |
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 | Phase                          | Description                                                            |
@@ -312,6 +270,22 @@ The script pauses twice for approval: remote backend Terraform plan and platform
 | Provisioning VM                | Installs Docker, syncs files, starts services via Azure Bastion        |
 | Writing outputs                | Saves credentials to `deployment_outputs.env`                          |
 | Deployment summary             | Prints URL, SSH command, credentials                                   |
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+| Phase                          | Description                                                      |
+| ------------------------------ | ---------------------------------------------------------------- |
+| Loading config                 | Validates `deployment.conf` variables                            |
+| Checking prerequisites         | Verifies required tools are installed                            |
+| Verifying GCP credentials      | Confirms valid `gcloud` session and project                      |
+| Initializing Terraform backend | Creates GCS bucket for Terraform state                           |
+| Running platform Terraform     | Plans and applies VM, GCS bucket, Cloud KMS key, DNS, firewall   |
+| Reading Terraform outputs      | Fetches VM private IP, GCS bucket name, KMS key ID               |
+| Generating .env                | Creates secrets and renders Docker Compose environment           |
+| Provisioning VM                | Installs Docker, syncs files, starts services via IAP SSH tunnel |
+| Writing outputs                | Saves credentials to `deployment_outputs.env`                    |
+| Deployment summary             | Prints URL, SSH command, credentials                             |
 
   </TabItem>
 </Tabs>
@@ -351,18 +325,6 @@ ssh -i codemie-key.pem \
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-SSH via Identity-Aware Proxy (IAP) tunnel:
-
-```bash
-gcloud compute ssh <INSTANCE_NAME> \
-  --project <PROJECT_ID> \
-  --zone <ZONE> \
-  --tunnel-through-iap
-```
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 SSH via Azure Bastion:
@@ -375,6 +337,18 @@ az network bastion ssh \
   --auth-type "ssh-key" \
   --username "azadmin" \
   --ssh-key "~/.ssh/codemie-key.pem"
+```
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+SSH via Identity-Aware Proxy (IAP) tunnel:
+
+```bash
+gcloud compute ssh <INSTANCE_NAME> \
+  --project <PROJECT_ID> \
+  --zone <ZONE> \
+  --tunnel-through-iap
 ```
 
   </TabItem>
@@ -503,77 +477,6 @@ chmod 600 codemie-key.pem
 After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
 
 </TabItem>
-<TabItem value="gcp" label="GCP">
-
-### Deployment Phases (GCP)
-
-| Phase                                | Description                                             | Directory                       |
-| ------------------------------------ | ------------------------------------------------------- | ------------------------------- |
-| **Phase 1: State Backend**           | Creates GCS bucket for Terraform state                  | `terraform/gcp/remote-backend/` |
-| **Phase 2: Platform Infrastructure** | Provisions VM, GCS bucket, Cloud KMS key, DNS, firewall | `terraform/gcp/platform/`       |
-
-### Phase 1: Terraform State Backend
-
-```bash
-cd terraform/gcp/remote-backend/
-terraform init
-```
-
-Create `terraform.tfvars`:
-
-```hcl
-project_id         = "my-codemie-project"
-region             = "europe-west3"
-states_bucket_name = "codemie-tfstate"
-```
-
-```bash
-terraform plan -out=tfplan
-terraform apply tfplan
-# Note the GCS bucket name from outputs
-```
-
-### Phase 2: Platform Infrastructure
-
-```bash
-cd terraform/gcp/platform/
-```
-
-Create `backend.tfvars`:
-
-```hcl
-bucket = "codemie-tfstate"
-prefix = "codemie/platform"
-```
-
-Create `terraform.tfvars`:
-
-```hcl
-project_id           = "my-codemie-project"
-region               = "europe-west3"
-zone_suffix          = "a"
-platform_name        = "codemie"
-machine_type         = "n2-highmem-4"
-disk_size            = 100
-platform_domain_name = ""
-```
-
-```bash
-terraform init -backend-config=backend.tfvars
-terraform plan -out=tfplan
-terraform apply tfplan
-
-# Note outputs for Phase 3:
-terraform output vm_private_ip
-terraform output gcs_bucket_name
-terraform output kms_key_id
-terraform output instance_name
-terraform output zone
-```
-
-After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
-
-</TabItem>
 <TabItem value="azure" label="Azure">
 
 ### Deployment Phases (Azure)
@@ -670,6 +573,77 @@ terraform apply tfplan
 terraform output azure_openai_endpoint
 terraform output azure_client_id
 terraform output azure_client_secret
+```
+
+After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.
+
+</TabItem>
+<TabItem value="gcp" label="GCP">
+
+### Deployment Phases (GCP)
+
+| Phase                                | Description                                             | Directory                       |
+| ------------------------------------ | ------------------------------------------------------- | ------------------------------- |
+| **Phase 1: State Backend**           | Creates GCS bucket for Terraform state                  | `terraform/gcp/remote-backend/` |
+| **Phase 2: Platform Infrastructure** | Provisions VM, GCS bucket, Cloud KMS key, DNS, firewall | `terraform/gcp/platform/`       |
+
+### Phase 1: Terraform State Backend
+
+```bash
+cd terraform/gcp/remote-backend/
+terraform init
+```
+
+Create `terraform.tfvars`:
+
+```hcl
+project_id         = "my-codemie-project"
+region             = "europe-west3"
+states_bucket_name = "codemie-tfstate"
+```
+
+```bash
+terraform plan -out=tfplan
+terraform apply tfplan
+# Note the GCS bucket name from outputs
+```
+
+### Phase 2: Platform Infrastructure
+
+```bash
+cd terraform/gcp/platform/
+```
+
+Create `backend.tfvars`:
+
+```hcl
+bucket = "codemie-tfstate"
+prefix = "codemie/platform"
+```
+
+Create `terraform.tfvars`:
+
+```hcl
+project_id           = "my-codemie-project"
+region               = "europe-west3"
+zone_suffix          = "a"
+platform_name        = "codemie"
+machine_type         = "n2-highmem-4"
+disk_size            = 100
+platform_domain_name = ""
+```
+
+```bash
+terraform init -backend-config=backend.tfvars
+terraform plan -out=tfplan
+terraform apply tfplan
+
+# Note outputs for Phase 3:
+terraform output vm_private_ip
+terraform output gcs_bucket_name
+terraform output kms_key_id
+terraform output instance_name
+terraform output zone
 ```
 
 After completing infrastructure provisioning, proceed to [Application Provisioning (BYO Mode)](../../platform-deployment/automated/on-vm) to deploy the CodeMie stack.

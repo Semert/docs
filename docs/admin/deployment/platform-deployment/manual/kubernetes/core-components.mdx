@@ -27,17 +27,24 @@ import CoreComponentsValidation from '../../../common/deployment/components-depl
   <TabItem value="aws" label="AWS">
     <CoreComponentsUi cloudProvider="AWS" valuesFileName="values-aws.yaml" />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <CoreComponentsUi cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <CoreComponentsUi cloudProvider="Azure" valuesFileName="values-azure.yaml" />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <CoreComponentsUi cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
   </TabItem>
 </Tabs>
 
 <Tabs groupId="cloud-provider">
 <TabItem value="aws" label="AWS">
 <CoreComponentsApi cloudProvider="AWS" valuesFileName="values-aws.yaml" additionalConfigParams={`- \`%%AWS_DEFAULT_REGION%%\` should be replaced with your AWS region (e.g., \`us-east-1\`)\n\n- \`%%EKS_AWS_ROLE_ARN%%\` should be replaced with your EKS service account IAM role ARN\n- \`%%AWS_KMS_KEY_ID%%\` should be replaced with your KMS key ID for encryption\n- \`%%AWS_S3_BUCKET_NAME%%\` should be replaced with your S3 bucket name\n- \`%%AWS_S3_REGION%%\` should be replaced with your S3 bucket region`} />
+</TabItem>
+<TabItem value="azure" label="Azure">
+<CoreComponentsApi
+  cloudProvider="Azure"
+  valuesFileName="values-azure.yaml"
+  additionalConfigParams=""
+/>
 </TabItem>
 <TabItem value="gcp" label="GCP">
 
@@ -100,13 +107,6 @@ kubectl logs -n codemie deployment/codemie-api --tail=100
 kubectl exec -n codemie deployment/codemie-api -- curl -s http://localhost:8080/health
 ```
 
-</TabItem>
-<TabItem value="azure" label="Azure">
-<CoreComponentsApi
-  cloudProvider="Azure"
-  valuesFileName="values-azure.yaml"
-  additionalConfigParams=""
-/>
 </TabItem>
 </Tabs>
 

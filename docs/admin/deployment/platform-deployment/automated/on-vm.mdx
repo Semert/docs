@@ -66,45 +66,6 @@ curl -k https://<CODEMIE_HOST>/v1/healthcheck
 Expected response: `{"status":"ok"}`
 
 </TabItem>
-<TabItem value="gcp" label="GCP">
-
-### Configure deployment.conf (BYO Mode)
-
-Fill in the values from Terraform outputs (Phase 2):
-
-```bash
-CLOUD_PROVIDER="gcp"
-CODEMIE_VERSION="2.26.0"
-COMPOSE_PROFILE="enterprise"
-
-BYO_VM_HOST="<vm_private_ip>"
-BYO_VM_USER="ubuntu"
-BYO_VM_SSH_KEY="/path/to/codemie-key"
-BYO_VM_SSH_MODE="iap"
-BYO_GCP_PROJECT_ID="<project_id>"
-BYO_GCP_ZONE="<zone>"
-BYO_GCP_INSTANCE_NAME="<instance_name>"
-BYO_GCS_BUCKET_NAME="<gcs_bucket>"
-BYO_GCP_KMS_KEY_ID="<kms_key_id>"
-BYO_PLATFORM_DOMAIN_NAME=""
-```
-
-### Run BYO Deployment
-
-```bash
-cp /path/to/key.json ./key.json
-./deploy.sh --byo
-```
-
-### Verify
-
-```bash
-curl -k https://<CODEMIE_HOST>/v1/healthcheck
-```
-
-Expected response: `{"status":"ok"}`
-
-</TabItem>
 <TabItem value="azure" label="Azure">
 
 ### Configure deployment.conf (BYO Mode)
@@ -132,6 +93,45 @@ BYO_PLATFORM_DOMAIN_NAME=""
 # AZURE_OPENAI_ENDPOINT=""
 # AZURE_CLIENT_ID=""
 # AZURE_CLIENT_SECRET=""
+```
+
+### Run BYO Deployment
+
+```bash
+cp /path/to/key.json ./key.json
+./deploy.sh --byo
+```
+
+### Verify
+
+```bash
+curl -k https://<CODEMIE_HOST>/v1/healthcheck
+```
+
+Expected response: `{"status":"ok"}`
+
+</TabItem>
+<TabItem value="gcp" label="GCP">
+
+### Configure deployment.conf (BYO Mode)
+
+Fill in the values from Terraform outputs (Phase 2):
+
+```bash
+CLOUD_PROVIDER="gcp"
+CODEMIE_VERSION="2.26.0"
+COMPOSE_PROFILE="enterprise"
+
+BYO_VM_HOST="<vm_private_ip>"
+BYO_VM_USER="ubuntu"
+BYO_VM_SSH_KEY="/path/to/codemie-key"
+BYO_VM_SSH_MODE="iap"
+BYO_GCP_PROJECT_ID="<project_id>"
+BYO_GCP_ZONE="<zone>"
+BYO_GCP_INSTANCE_NAME="<instance_name>"
+BYO_GCS_BUCKET_NAME="<gcs_bucket>"
+BYO_GCP_KMS_KEY_ID="<kms_key_id>"
+BYO_PLATFORM_DOMAIN_NAME=""
 ```
 
 ### Run BYO Deployment

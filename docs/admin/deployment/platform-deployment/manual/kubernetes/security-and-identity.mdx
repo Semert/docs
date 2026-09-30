@@ -28,14 +28,6 @@ import SecurityValidation from '../../../common/deployment/components-deployment
     />
     <SecurityOauth2Proxy cloudProvider="AWS" valuesFileName="values-aws.yaml" />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <SecurityKeycloakInstall
-      cloudProvider="GCP"
-      valuesFileName="values-gcp.yaml"
-      keycloakUrl="https://keycloak.airun.example.com/auth/admin"
-    />
-    <SecurityOauth2Proxy cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <SecurityKeycloakInstall
       cloudProvider="Azure"
@@ -43,6 +35,14 @@ import SecurityValidation from '../../../common/deployment/components-deployment
       keycloakUrl="https://codemie.example.com/keycloak/admin"
     />
     <SecurityOauth2Proxy cloudProvider="Azure" valuesFileName="values-azure.yaml" />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <SecurityKeycloakInstall
+      cloudProvider="GCP"
+      valuesFileName="values-gcp.yaml"
+      keycloakUrl="https://keycloak.airun.example.com/auth/admin"
+    />
+    <SecurityOauth2Proxy cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
   </TabItem>
 </Tabs>
 

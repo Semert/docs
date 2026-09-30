@@ -16,12 +16,17 @@ This guide covers deploying the cloud infrastructure required to run AI/Run Code
 
 The Terraform automation provisions a managed Kubernetes cluster together with networking, storage, databases, and security infrastructure. The resulting `deployment_outputs.env` file contains all values needed for the subsequent platform deployment phase.
 
+This guide covers two deployment methods:
+
+- [**Scripted Deployment**](#scripted-deployment) - Automated shell script handles all Terraform phases in sequence
+- [**Manual Deployment**](#manual-deployment) - Step-by-step Terraform commands for full control over each phase
+
 :::tip Recommended Approach
 Scripted deployment is the recommended method as it handles prerequisite checks, configuration validation, and proper sequencing of Terraform operations automatically.
 :::
 
 :::info Existing Infrastructure
-If you already have a provisioned Kubernetes cluster with all required services, skip this page and proceed directly to [Platform Deployment](../platform-deployment/index.md).
+If you already have a provisioned Kubernetes cluster with all required services, skip this page and proceed directly to [Platform Deployment](../platform-deployment/index.mdx).
 :::
 
 ## Prerequisites
@@ -45,22 +50,6 @@ You must have configured AWS credentials before running the deployment. Verify w
 :::
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-### Verification Checklist
-
-- [ ] **GCP Access**: Project Owner or Editor role with IAM permissions
-- [ ] **Required APIs Enabled**: Cloud IAP, Service Networking, Secret Manager, Vertex AI APIs
-- [ ] **Tools Installed**: tfenv, Terraform 1.13.5+, gcloud CLI, kubectl, Helm, Docker
-- [ ] **GCP Authentication**: Logged in with gcloud CLI and application default credentials configured
-- [ ] **Repository Access**: Access to Terraform and Helm repositories
-- [ ] **Network Planning**: Prepared list of authorized networks (if accessing GKE API from workstation)
-
-:::warning Authentication Required
-You must be authenticated to GCP CLI before running Terraform. Run `gcloud auth login` and `gcloud auth application-default login`. Verify the active project with `gcloud config get-value project`.
-:::
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 ### Verification Checklist
@@ -74,6 +63,22 @@ You must be authenticated to GCP CLI before running Terraform. Run `gcloud auth 
 
 :::warning Authentication Required
 You must be authenticated to Azure CLI before running the deployment script. Run `az login` and verify with `az account show`.
+:::
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+### Verification Checklist
+
+- [ ] **GCP Access**: Project Owner or Editor role with IAM permissions
+- [ ] **Required APIs Enabled**: Cloud IAP, Service Networking, Secret Manager, Vertex AI APIs
+- [ ] **Tools Installed**: tfenv, Terraform 1.13.5+, gcloud CLI, kubectl, Helm, Docker
+- [ ] **GCP Authentication**: Logged in with gcloud CLI and application default credentials configured
+- [ ] **Repository Access**: Access to Terraform and Helm repositories
+- [ ] **Network Planning**: Prepared list of authorized networks (if accessing GKE API from workstation)
+
+:::warning Authentication Required
+You must be authenticated to GCP CLI before running Terraform. Run `gcloud auth login` and `gcloud auth application-default login`. Verify the active project with `gcloud config get-value project`.
 :::
 
   </TabItem>
@@ -208,6 +213,76 @@ Ensure that incoming traffic to the Security Group on LoadBalancers is allowed f
 
 </TabItem>
 
+  <TabItem value="azure" label="Azure">
+
+### Deployment Phases (Azure)
+
+| Phase                                | Description                                                      | Required |
+| ------------------------------------ | ---------------------------------------------------------------- | -------- |
+| **Phase 1: State Backend**           | Creates Azure Storage Account for Terraform state files          | Yes      |
+| **Phase 2: Platform Infrastructure** | Deploys AKS, networking, storage, databases, security components | Yes      |
+| **Phase 3: AI Models**               | Provisions Azure OpenAI services                                 | Optional |
+
+:::info Skipping AI Models
+Set `DEPLOY_AI_MODELS="false"` to skip Phase 3 if using external AI providers.
+:::
+
+### Step 1: Clone Repository
+
+```bash
+git clone git@gitbud.epam.com:epm-cdme/codemie-terraform-azure.git
+cd codemie-terraform-azure
+```
+
+### Step 2: Configure Deployment
+
+Edit `deployment.conf`:
+
+```bash
+# Required: Azure Account Information
+AZURE_TENANT_ID="00000000-0000-0000-0000-000000000000"
+AZURE_SUBSCRIPTION_ID="11111111-1111-1111-1111-111111111111"
+
+# Required: Basic Configuration
+TF_VAR_customer="airun"
+TF_VAR_location="West Europe"
+TF_VAR_resource_group_name=""  # Leave empty to auto-generate
+
+# Required: AKS Admin Access
+TF_VAR_admin_group_object_ids='["3a459347-0000-1111-2222-e73413cfa80a"]'
+
+# Optional: Resource Tagging
+TF_VAR_tags='{"createdWith":"Terraform","environment":"production"}'
+
+# Optional: AI Models Deployment
+DEPLOY_AI_MODELS="true"
+
+# Optional: Dedicated PostgreSQL Flexible Server Instances
+TF_VAR_keycloak_db_config='{"enabled":true}'
+TF_VAR_langfuse_db_config='{"enabled":false}'
+TF_VAR_litellm_db_config='{"enabled":false}'
+```
+
+:::info Azure OpenAI Configuration
+When `DEPLOY_AI_MODELS="true"`, configure the `TF_VAR_cognitive_regions` variable to specify which Azure OpenAI models to deploy, in which regions, and with what capacity. See `variables.tf` in the `platform/` directory for the full variable schema.
+:::
+
+### Step 3: Run Deployment Script
+
+```bash
+bash ./azure-terraform.sh
+```
+
+The script automatically executes:
+
+1. **Validate Environment** — Check for required tools and Azure authentication
+2. **Verify Configuration** — Validate `deployment.conf` parameters
+3. **Deploy State Backend** — Create Azure Storage Account
+4. **Deploy Platform Infrastructure** — Provision AKS, networking, storage, databases
+5. **Deploy AI Models** — Provision Azure OpenAI services (if `DEPLOY_AI_MODELS="true"`)
+6. **Generate Outputs** — Create `deployment_outputs.env`
+
+  </TabItem>
   <TabItem value="gcp" label="GCP">
 
 ### Deployment Phases (GCP)
@@ -276,78 +351,8 @@ The script automatically executes:
 7. **Generate Outputs** — Create `deployment_outputs.env`
 
 :::info Private Cluster Post-Deployment
-For a **private GKE cluster** (`TF_VAR_private_cluster=true`), configure [Bastion Host access](../../gcp/kubernetes/infrastructure-deployment/infrastructure-bastion-host-access) before proceeding to platform deployment.
+For a **private GKE cluster** (`TF_VAR_private_cluster=true`), configure [Bastion Host access](#phase-3-configure-bastion-host-access-optional) before proceeding to platform deployment.
 :::
-
-  </TabItem>
-  <TabItem value="azure" label="Azure">
-
-### Deployment Phases (Azure)
-
-| Phase                                | Description                                                      | Required |
-| ------------------------------------ | ---------------------------------------------------------------- | -------- |
-| **Phase 1: State Backend**           | Creates Azure Storage Account for Terraform state files          | Yes      |
-| **Phase 2: Platform Infrastructure** | Deploys AKS, networking, storage, databases, security components | Yes      |
-| **Phase 3: AI Models**               | Provisions Azure OpenAI services                                 | Optional |
-
-:::info Skipping AI Models
-Set `DEPLOY_AI_MODELS="false"` to skip Phase 3 if using external AI providers.
-:::
-
-### Step 1: Clone Repository
-
-```bash
-git clone git@gitbud.epam.com:epm-cdme/codemie-terraform-azure.git
-cd codemie-terraform-azure
-```
-
-### Step 2: Configure Deployment
-
-Edit `deployment.conf`:
-
-```bash
-# Required: Azure Account Information
-AZURE_TENANT_ID="00000000-0000-0000-0000-000000000000"
-AZURE_SUBSCRIPTION_ID="11111111-1111-1111-1111-111111111111"
-
-# Required: Basic Configuration
-TF_VAR_customer="airun"
-TF_VAR_location="West Europe"
-TF_VAR_resource_group_name=""  # Leave empty to auto-generate
-
-# Required: AKS Admin Access
-TF_VAR_admin_group_object_ids='["3a459347-0000-1111-2222-e73413cfa80a"]'
-
-# Optional: Resource Tagging
-TF_VAR_tags='{"createdWith":"Terraform","environment":"production"}'
-
-# Optional: AI Models Deployment
-DEPLOY_AI_MODELS="true"
-
-# Optional: Dedicated PostgreSQL Flexible Server Instances
-TF_VAR_keycloak_db_config='{"enabled":true}'
-TF_VAR_langfuse_db_config='{"enabled":false}'
-TF_VAR_litellm_db_config='{"enabled":false}'
-```
-
-:::info Azure OpenAI Configuration
-When `DEPLOY_AI_MODELS="true"`, configure the `TF_VAR_cognitive_regions` variable to specify which Azure OpenAI models to deploy and in which regions. See [Azure AI Models Configuration](../../azure/kubernetes/infrastructure-deployment/infrastructure-scripted-deployment#azure-openai-model-configuration) for detailed examples.
-:::
-
-### Step 3: Run Deployment Script
-
-```bash
-bash ./azure-terraform.sh
-```
-
-The script automatically executes:
-
-1. **Validate Environment** — Check for required tools and Azure authentication
-2. **Verify Configuration** — Validate `deployment.conf` parameters
-3. **Deploy State Backend** — Create Azure Storage Account
-4. **Deploy Platform Infrastructure** — Provision AKS, networking, storage, databases
-5. **Deploy AI Models** — Provision Azure OpenAI services (if `DEPLOY_AI_MODELS="true"`)
-6. **Generate Outputs** — Create `deployment_outputs.env`
 
   </TabItem>
 </Tabs>
@@ -378,28 +383,6 @@ CODEMIE_POSTGRES_DATABASE_PASSWORD="generated-password"
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-```bash
-# GKE Cluster
-GKE_CLUSTER_NAME=codemie-gke
-GKE_LOCATION=europe-west3
-KUBECTL_COMMAND=gcloud container clusters get-credentials --project my-gcp-project --zone europe-west3 codemie-gke
-
-# GCP
-VERTEX_PROJECT=my-gcp-project
-
-# PostgreSQL
-CODEMIE_POSTGRES_DATABASE_HOST=<postgres-private-ip>
-CODEMIE_POSTGRES_DATABASE_PORT=5432
-CODEMIE_POSTGRES_DATABASE_NAME=codemie
-CODEMIE_POSTGRES_DATABASE_USER=admin
-CODEMIE_POSTGRES_DATABASE_INSTANCE=codemie-postgresql
-CODEMIE_POSTGRES_DATABASE_SECRET=codeemiePGDB
-CODEMIE_POSTGRES_DATABASE_PASSWORD=generated-password
-```
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 ```bash
@@ -422,6 +405,28 @@ CODEMIE_POSTGRES_DATABASE_PORT="5432"
 CODEMIE_POSTGRES_DATABASE_NAME="codemie"
 CODEMIE_POSTGRES_DATABASE_USER="pgadmin"
 CODEMIE_POSTGRES_DATABASE_PASSWORD="password"
+```
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+```bash
+# GKE Cluster
+GKE_CLUSTER_NAME=codemie-gke
+GKE_LOCATION=europe-west3
+KUBECTL_COMMAND=gcloud container clusters get-credentials --project my-gcp-project --zone europe-west3 codemie-gke
+
+# GCP
+VERTEX_PROJECT=my-gcp-project
+
+# PostgreSQL
+CODEMIE_POSTGRES_DATABASE_HOST=<postgres-private-ip>
+CODEMIE_POSTGRES_DATABASE_PORT=5432
+CODEMIE_POSTGRES_DATABASE_NAME=codemie
+CODEMIE_POSTGRES_DATABASE_USER=admin
+CODEMIE_POSTGRES_DATABASE_INSTANCE=codemie-postgresql
+CODEMIE_POSTGRES_DATABASE_SECRET=codeemiePGDB
+CODEMIE_POSTGRES_DATABASE_PASSWORD=generated-password
 ```
 
   </TabItem>
@@ -454,33 +459,6 @@ Review deployment logs:
 ```bash
 less logs/codemie_aws_deployment_YYYY-MM-DD-HHMMSS.log
 ```
-
-  </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-```bash
-# Verify GKE cluster status
-gcloud container clusters list --project=<your-project-id>
-
-# Check Cloud SQL instance
-gcloud sql instances list --project=<your-project-id>
-
-# Check Memorystore Redis instance (if enabled)
-gcloud redis instances list --project=<your-project-id> --region=<your-region>
-
-# Verify GCS state bucket
-gcloud storage buckets list | grep terraform
-```
-
-Review deployment logs:
-
-```bash
-less logs/codemie_gcp_deployment_YYYY-MM-DD-HHMMSS.log
-```
-
-:::info Private Cluster Next Step
-If you deployed a **private GKE cluster** (`TF_VAR_private_cluster=true`), proceed to [Bastion Host Access Configuration](../../gcp/kubernetes/infrastructure-deployment/infrastructure-bastion-host-access) before deploying platform components.
-:::
 
   </TabItem>
   <TabItem value="azure" label="Azure">
@@ -522,6 +500,33 @@ az aks get-credentials \
 kubelogin convert-kubeconfig -l azurecli
 kubectl get nodes
 ```
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+```bash
+# Verify GKE cluster status
+gcloud container clusters list --project=<your-project-id>
+
+# Check Cloud SQL instance
+gcloud sql instances list --project=<your-project-id>
+
+# Check Memorystore Redis instance (if enabled)
+gcloud redis instances list --project=<your-project-id> --region=<your-region>
+
+# Verify GCS state bucket
+gcloud storage buckets list | grep terraform
+```
+
+Review deployment logs:
+
+```bash
+less logs/codemie_gcp_deployment_YYYY-MM-DD-HHMMSS.log
+```
+
+:::info Private Cluster Next Step
+If you deployed a **private GKE cluster** (`TF_VAR_private_cluster=true`), proceed to [Bastion Host Access Configuration](#phase-3-configure-bastion-host-access-optional) before deploying platform components.
+:::
 
   </TabItem>
 </Tabs>
@@ -642,6 +647,141 @@ terraform output
 ```
 
   </TabItem>
+  <TabItem value="azure" label="Azure">
+
+### Phase 1: Terraform State Backend
+
+1. Clone the repository:
+
+```bash
+git clone git@gitbud.epam.com:epm-cdme/codemie-terraform-azure.git
+cd codemie-terraform-azure/remote-backend
+```
+
+2. Create `terraform.tfvars`:
+
+```hcl
+subscription_id = "11111111-1111-1111-1111-111111111111"
+customer         = "airun"          # 3-24 chars, lowercase letters and digits only
+location         = "West Europe"
+```
+
+3. Authenticate, apply Terraform, and note the outputs:
+
+```bash
+az login
+az account set --subscription "11111111-1111-1111-1111-111111111111"
+
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+
+export BC_RESOURCE_GROUP_NAME=$(terraform output -raw terraform_state_resource_group_name)
+export BC_STORAGE_ACCOUNT_NAME=$(terraform output -raw terraform_state_storage_account)
+export STORAGE_ACCOUNT_KEY=$(terraform output -raw terraform_state_storage_account_key)
+```
+
+### Phase 2: Platform Infrastructure
+
+1. Navigate to the platform directory:
+
+```bash
+cd ../platform
+```
+
+2. Create `terraform.tfvars`:
+
+```hcl
+customer                = "airun"                # Must match Phase 1
+product_name            = "airun-codemie"
+codemie_domain_name     = "private.lab.com"
+location                = "West Europe"
+admin_group_object_ids  = ["3a459347-0000-1111-2222-e73413cfa80a"]
+keycloak_db_config      = { enabled = true }
+langfuse_db_config      = { enabled = false }
+litellm_db_config       = { enabled = false }
+```
+
+:::info Complete Variable List
+For all available configuration options (node pool sizing, Container Registry, Langfuse blob storage, etc), refer to the `variables.tf` file in the `platform/` directory.
+:::
+
+3. Initialize Terraform with backend configuration and apply:
+
+```bash
+export TF_VAR_script_storage_account_key="$STORAGE_ACCOUNT_KEY"
+export TF_VAR_script_storage_account_name="$BC_STORAGE_ACCOUNT_NAME"
+
+# Required only if you plan to run Phase 3 (AI Models) afterwards:
+export TF_VAR_grant_openai_access=true
+
+terraform init \
+  -backend-config="resource_group_name=${BC_RESOURCE_GROUP_NAME}" \
+  -backend-config="storage_account_name=${BC_STORAGE_ACCOUNT_NAME}" \
+  -backend-config="container_name=tfstate" \
+  -backend-config="key=platform.terraform.tfstate"
+
+terraform plan -out=tfplan
+terraform apply tfplan
+terraform output
+
+export AZURE_RESOURCE_GROUP=$(terraform output -raw codemie_resource_group)
+```
+
+### Phase 3: AI Models (Optional)
+
+Skip this phase if you're using external AI providers or already have Azure OpenAI services deployed.
+
+1. Navigate to the AI models directory:
+
+```bash
+cd ../ai-models
+```
+
+2. Create `terraform.tfvars`:
+
+```hcl
+resource_group_name = "airun-codemie"     # From Phase 2 output: codemie_resource_group
+location             = "West Europe"
+
+cognitive_regions = {
+  "eastus" = {
+    count              = 2
+    custom_domain_name = true
+    available_models = [
+      {
+        format     = "OpenAI"
+        name       = "gpt-4.1-2025-04-14"
+        model_name = "gpt-4.1"
+        version    = "2025-04-14"
+        capacity   = 200
+        type       = "GlobalStandard"
+      }
+    ]
+  }
+}
+```
+
+:::info Configuration Reference
+See [ai-models/variables.tf](https://gitbud.epam.com/epm-cdme/codemie-terraform-azure/-/blob/main/ai-models/variables.tf) for the complete list of available configuration options.
+:::
+
+3. Initialize Terraform with backend configuration, reusing the state backend from Phase 1, and apply:
+
+```bash
+export TF_VAR_resource_group_name="$AZURE_RESOURCE_GROUP"
+
+terraform init \
+  -backend-config="resource_group_name=${BC_RESOURCE_GROUP_NAME}" \
+  -backend-config="storage_account_name=${BC_STORAGE_ACCOUNT_NAME}" \
+  -backend-config="container_name=tfstate" \
+  -backend-config="key=ai_models.terraform.tfstate"
+
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+
+  </TabItem>
   <TabItem value="gcp" label="GCP">
 
 ### Phase 1: Terraform State Backend
@@ -704,18 +844,155 @@ terraform apply tfplan
 terraform output
 ```
 
-:::info Private Cluster Next Step
-For a **private GKE cluster**, proceed to [Bastion Host Access Configuration](../../gcp/kubernetes/infrastructure-deployment/infrastructure-bastion-host-access) before deploying platform components.
+### Phase 3: Configure Bastion Host Access (Optional)
+
+:::warning Private Cluster Only
+This section is only required if you deployed a **completely private GKE cluster** with private DNS. For public clusters or clusters with authorized networks configured, you can access the GKE API and CodeMie application directly from your workstation.
 :::
 
-  </TabItem>
-  <TabItem value="azure" label="Azure">
+The Bastion Host is a secure jump server that provides access to your private GKE cluster and applications running inside the VPC. This VM enables both command-line management (SSH) and browser-based access (RDP) to internal resources.
 
-:::warning Manual Deployment Not Available for Azure
-Manual Kubernetes infrastructure deployment is not documented for Azure. Use [Scripted Deployment](#scripted-deployment) instead.
+#### Connection Methods Overview
 
-If you need Terraform-level control for Azure, refer to the `variables.tf` files in the `codemie-terraform-azure` repository directly.
+| Connection Type | Use Case                                                      | Access Method         |
+| --------------- | ------------------------------------------------------------- | --------------------- |
+| **SSH**         | Deploy and manage Kubernetes workloads using kubectl and Helm | Terminal/SSH client   |
+| **RDP**         | Access web UIs exposed via private DNS (Kibana, Keycloak)     | Remote Desktop client |
+
+#### Option 1: SSH Connection for Cluster Management
+
+Use SSH to connect to the Bastion Host for deploying and managing Kubernetes resources.
+
+1. Retrieve the SSH command from Terraform outputs and connect:
+
+```bash
+# Get the SSH connection command
+terraform output bastion_ssh_command
+
+# Example output:
+# gcloud compute ssh bastion-vm --project=your-project --zone=europe-west3-a
+
+# Use this command to connect
+gcloud compute ssh bastion-vm --project=your-project --zone=europe-west3-a
+```
+
+:::tip IAM Permissions
+Ensure your user account is listed in the `bastion_members` variable from Phase 2 configuration. Only authorized users can SSH into the Bastion Host.
 :::
+
+##### Step 2: Set user password (Required for RDP)
+
+After connecting via SSH, set a password for the `ubuntu` user for later RDP access:
+
+```bash
+# Set password for the ubuntu user (you'll be prompted to enter it twice)
+sudo passwd ubuntu
+```
+
+:::info Save Your Password
+The `ubuntu` user password you set here will be used to login via RDP. Make sure to remember it or store it securely.
+:::
+
+3. Fetch GKE cluster credentials to enable kubectl commands:
+
+```bash
+# Get the kubectl configuration command
+terraform output get_kubectl_credentials_for_private_cluster
+
+# Example output:
+# gcloud container clusters get-credentials your-cluster-name --region=europe-west3 --project=your-project
+
+# Run the command to configure kubectl
+gcloud container clusters get-credentials your-cluster-name --region=europe-west3 --project=your-project
+```
+
+4. Transfer the Helm charts repository to the Bastion Host.
+
+:::warning VPN Required for gitbud.epam.com
+`gitbud.epam.com` is only accessible through VPN and is not reachable from the Bastion Host directly. Clone the repository on your local machine first, then transfer it using `gcloud scp`.
+:::
+
+On your **local machine** (with VPN active):
+
+```bash
+git clone https://gitbud.epam.com/epm-cdme/codemie-helm-charts.git
+```
+
+Then transfer the cloned directory to the Bastion Host:
+
+```bash
+gcloud compute scp --recurse ./codemie-helm-charts bastion-vm:~/ \
+  --project=your-project --zone=europe-west3-a
+```
+
+On the **Bastion Host**, navigate to the transferred directory:
+
+```bash
+cd ~/codemie-helm-charts
+```
+
+You're now ready to proceed with [Platform Deployment](../platform-deployment/index.mdx).
+
+#### Option 2: RDP Connection for Web UI Access
+
+Use RDP to access application web interfaces that are only available via private DNS (such as Kibana, Keycloak Admin Console).
+
+:::tip When to Use RDP
+RDP is useful when you need to access web-based administrative interfaces that aren't exposed publicly. For kubectl/Helm operations, SSH access is sufficient.
+:::
+
+1. Retrieve the RDP forwarding command from Terraform outputs and start the IAP tunnel:
+
+```bash
+# Get the RDP forwarding command
+terraform output bastion_rdp_command
+
+# Example output:
+# gcloud compute start-iap-tunnel bastion-vm 3389 --local-host-port=localhost:3389 --zone=europe-west3-a --project=your-project
+```
+
+Run the command to create an IAP tunnel that forwards RDP traffic (keep this terminal open):
+
+```bash
+gcloud compute start-iap-tunnel bastion-vm 3389 \
+  --local-host-port=localhost:3389 \
+  --zone=europe-west3-a \
+  --project=your-project
+```
+
+2. Open your Remote Desktop client and connect:
+
+| Setting      | Value                      |
+| ------------ | -------------------------- |
+| **Computer** | `localhost:3389`           |
+| **Username** | `ubuntu`                   |
+| **Password** | Password set in SSH Step 2 |
+
+#### Tips for Using the Bastion Host
+
+##### Pasting Commands into Terminal
+
+Use the correct keyboard shortcut for pasting in Linux terminal:
+
+```
+Shift + Ctrl + V
+```
+
+(Regular `Ctrl + V` won't work in most Linux terminal applications)
+
+##### File Transfer to/from Bastion
+
+Transfer files between your local machine and Bastion using `gcloud scp`:
+
+```bash
+# Upload file to Bastion
+gcloud compute scp local-file.txt bastion-vm:~/remote-file.txt \
+  --project=your-project --zone=europe-west3-a
+
+# Download file from Bastion
+gcloud compute scp bastion-vm:~/remote-file.txt ./local-file.txt \
+  --project=your-project --zone=europe-west3-a
+```
 
   </TabItem>
 </Tabs>
@@ -724,4 +1001,4 @@ If you need Terraform-level control for Azure, refer to the `variables.tf` files
 
 ## Next Steps
 
-After successful infrastructure deployment, proceed to [Platform Deployment](../platform-deployment/index.md) to install AI/Run CodeMie application components.
+After successful infrastructure deployment, proceed to [Platform Deployment](../platform-deployment/index.mdx) to install AI/Run CodeMie application components.

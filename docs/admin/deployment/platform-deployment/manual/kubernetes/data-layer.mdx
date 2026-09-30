@@ -23,11 +23,11 @@ import DataLayerValidation from '../../../common/deployment/components-deploymen
   <TabItem value="aws" label="AWS">
     <DataLayerElasticsearch cloudProvider="AWS" valuesFileName="values-aws.yaml" />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <DataLayerElasticsearch cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <DataLayerElasticsearch cloudProvider="Azure" valuesFileName="values-azure.yaml" />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <DataLayerElasticsearch cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
   </TabItem>
 </Tabs>
 
@@ -45,14 +45,6 @@ import DataLayerValidation from '../../../common/deployment/components-deploymen
       postgresExampleHost="codemie-postgres.abc123.us-west-2.rds.amazonaws.com"
     />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <DataLayerPostgresConfig
-      postgresServiceName="GCP Cloud SQL PostgreSQL"
-      postgresExampleHost="10.0.0.5:5432"
-      infrastructureDeploymentLink="../../../../infrastructure-deployment/kubernetes"
-    />
-    <DataLayerPostgresSecretCommon postgresExampleHost="10.0.0.5:5432" />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <DataLayerPostgresConfig
       postgresServiceName="Azure Database for PostgreSQL"
@@ -62,6 +54,14 @@ import DataLayerValidation from '../../../common/deployment/components-deploymen
     <DataLayerPostgresSecretCommon
       postgresExampleHost="codemie-postgres.postgres.database.azure.com"
     />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <DataLayerPostgresConfig
+      postgresServiceName="GCP Cloud SQL PostgreSQL"
+      postgresExampleHost="10.0.0.5:5432"
+      infrastructureDeploymentLink="../../../../infrastructure-deployment/kubernetes"
+    />
+    <DataLayerPostgresSecretCommon postgresExampleHost="10.0.0.5:5432" />
   </TabItem>
 </Tabs>
 

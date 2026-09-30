@@ -18,11 +18,11 @@ import StorageIngressValidation from '../../../common/deployment/components-depl
   <TabItem value="aws" label="AWS">
     <StorageIngressOverview storageClassName="AWS gp3" clusterName="EKS" />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <StorageIngressOverview storageClassName="GCP Storage Class" clusterName="GKE" />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <StorageIngressOverview storageClassName="Azure Storage Class" clusterName="AKS" />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <StorageIngressOverview storageClassName="GCP Storage Class" clusterName="GKE" />
   </TabItem>
 </Tabs>
 
@@ -75,16 +75,6 @@ nslookup codemie.airun.example.com
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <StorageIngressNginx cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
-
-:::info DNS for GCP
-For **private clusters**, DNS is automatically configured by the Terraform infrastructure deployment. No manual DNS step is required here.
-
-For **public clusters**, refer to the [Automated Deployment DNS guide](../../automated/kubernetes.mdx#gcp-post-deployment-dns-configuration) for adding the required A records.
-:::
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <StorageIngressNginx cloudProvider="Azure" valuesFileName="values-azure.yaml" />
 
@@ -121,6 +111,16 @@ nslookup codemie.airun.example.com
 ```
 
   </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <StorageIngressNginx cloudProvider="GCP" valuesFileName="values-gcp.yaml" />
+
+:::info DNS for GCP
+For **private clusters**, DNS is automatically configured by the Terraform infrastructure deployment. No manual DNS step is required here.
+
+For **public clusters**, refer to the [Automated Deployment DNS guide](../../automated/kubernetes.mdx#gcp-post-deployment-dns-configuration) for adding the required A records.
+:::
+
+  </TabItem>
 </Tabs>
 
 <Tabs groupId="cloud-provider">
@@ -133,15 +133,6 @@ nslookup codemie.airun.example.com
       storageClassFileName="storageclass-aws-gp3.yaml"
     />
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-    <StorageClassInstallation
-      storageClassName="GCP Storage Class"
-      storageType="GCP Persistent Disks"
-      existingStorageExamples="`standard-rwo` or similar"
-      cloudProvider="GCP"
-      storageClassFileName="storageclass-gcp-pd-balanced.yaml"
-    />
-  </TabItem>
   <TabItem value="azure" label="Azure">
     <StorageClassInstallation
       storageClassName="Azure Storage Class"
@@ -149,6 +140,15 @@ nslookup codemie.airun.example.com
       existingStorageExamples="`managed-premium` or similar"
       cloudProvider="Azure"
       storageClassFileName="storageclass-azure.yaml"
+    />
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+    <StorageClassInstallation
+      storageClassName="GCP Storage Class"
+      storageType="GCP Persistent Disks"
+      existingStorageExamples="`standard-rwo` or similar"
+      cloudProvider="GCP"
+      storageClassFileName="storageclass-gcp-pd-balanced.yaml"
     />
   </TabItem>
 </Tabs>

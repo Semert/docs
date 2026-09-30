@@ -46,17 +46,6 @@ The `helm-charts.sh` script from the [codemie-helm-charts](https://gitbud.epam.c
 
 </TabItem>
 
-  <TabItem value="gcp" label="GCP">
-
-- [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../infrastructure-deployment/kubernetes.mdx) phase
-- [ ] **Cluster Access**: Connected to Bastion Host (for private clusters) or `kubectl` configured for GKE
-- [ ] **Container Registry**: Completed Container Registry Access Setup (pull secret `gcp-artifact-registry` exists)
-- [ ] **Helm Installed**: Helm 3.16.0+
-- [ ] **Repository Cloned**: `codemie-helm-charts` available locally
-- [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI
-
-</TabItem>
-
   <TabItem value="azure" label="Azure">
 
 - [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../infrastructure-deployment/kubernetes.mdx) phase
@@ -66,6 +55,17 @@ The `helm-charts.sh` script from the [codemie-helm-charts](https://gitbud.epam.c
 - [ ] **Repository Cloned**: `codemie-helm-charts` available locally
 - [ ] **Deployment Outputs**: Have `deployment_outputs.env` from infrastructure deployment
 - [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI, `az` CLI
+
+</TabItem>
+
+  <TabItem value="gcp" label="GCP">
+
+- [ ] **Infrastructure Deployed**: Completed [Infrastructure Deployment](../../infrastructure-deployment/kubernetes.mdx) phase
+- [ ] **Cluster Access**: Connected to Bastion Host (for private clusters) or `kubectl` configured for GKE
+- [ ] **Container Registry**: Completed Container Registry Access Setup (pull secret `gcp-artifact-registry` exists)
+- [ ] **Helm Installed**: Helm 3.16.0+
+- [ ] **Repository Cloned**: `codemie-helm-charts` available locally
+- [ ] **Tools**: `kubectl`, `helm`, `gcloud` CLI
 
 </TabItem>
 
@@ -118,6 +118,27 @@ find . -name "values-aws.yaml" -exec sed -i "s/%%DOMAIN%%/${CODEMIE_DOMAIN_NAME}
 | `%%AWS_KMS_KEY_ID%%`     | KMS key ID        | `deployment_outputs.env` → `AWS_KMS_KEY_ID`      |
 | `%%AWS_S3_BUCKET_NAME%%` | S3 bucket name    | `deployment_outputs.env` → `AWS_S3_BUCKET_NAME`  |
 | `%%AWS_S3_REGION%%`      | S3 bucket region  | `deployment_outputs.env` → `AWS_S3_REGION`       |
+
+  </TabItem>
+  <TabItem value="azure" label="Azure">
+
+Update the domain placeholder in all Azure values files:
+
+```bash
+# Use your DNS zone name from deployment_outputs.env
+CODEMIE_DOMAIN_NAME="airun.example.com"
+
+# Update all values-azure.yaml files (default placeholder is private.lab.com)
+find . -name "values-azure.yaml" -exec sed -i "s/private.lab.com/$CODEMIE_DOMAIN_NAME/g" {} \;
+```
+
+| Component        | File                              | Placeholder               |
+| ---------------- | --------------------------------- | ------------------------- |
+| **Kibana**       | `kibana/values-azure.yaml`        | `*.private.lab.com`       |
+| **Keycloak**     | `keycloak-helm/values-azure.yaml` | `*.private.lab.com`       |
+| **OAuth2 Proxy** | `oauth2-proxy/values-azure.yaml`  | `*.private.lab.com`       |
+| **CodeMie UI**   | `codemie-ui/values-azure.yaml`    | `codemie.private.lab.com` |
+| **CodeMie API**  | `codemie-api/values-azure.yaml`   | `*.private.lab.com`       |
 
   </TabItem>
   <TabItem value="gcp" label="GCP">
@@ -209,27 +230,6 @@ Never deploy a public LoadBalancer without `loadBalancerSourceRanges` configured
 :::
 
   </TabItem>
-  <TabItem value="azure" label="Azure">
-
-Update the domain placeholder in all Azure values files:
-
-```bash
-# Use your DNS zone name from deployment_outputs.env
-CODEMIE_DOMAIN_NAME="airun.example.com"
-
-# Update all values-azure.yaml files (default placeholder is private.lab.com)
-find . -name "values-azure.yaml" -exec sed -i "s/private.lab.com/$CODEMIE_DOMAIN_NAME/g" {} \;
-```
-
-| Component        | File                              | Placeholder               |
-| ---------------- | --------------------------------- | ------------------------- |
-| **Kibana**       | `kibana/values-azure.yaml`        | `*.private.lab.com`       |
-| **Keycloak**     | `keycloak-helm/values-azure.yaml` | `*.private.lab.com`       |
-| **OAuth2 Proxy** | `oauth2-proxy/values-azure.yaml`  | `*.private.lab.com`       |
-| **CodeMie UI**   | `codemie-ui/values-azure.yaml`    | `codemie.private.lab.com` |
-| **CodeMie API**  | `codemie-api/values-azure.yaml`   | `*.private.lab.com`       |
-
-  </TabItem>
 </Tabs>
 
 ### Step 3: Authenticate to Container Registry
@@ -284,23 +284,6 @@ bash helm-charts.sh --cloud aws --version <version> --mode update
 ```
 
   </TabItem>
-  <TabItem value="gcp" label="GCP">
-
-```bash
-# Standard installation with all core components
-bash helm-charts.sh --cloud gcp --version <version> --mode all
-
-# With database management tools
-bash helm-charts.sh --cloud gcp --version <version> --mode all --optional pgadmin
-
-# With LiteLLM for multi-model AI testing
-bash helm-charts.sh --cloud gcp --version <version> --mode recommended --optional litellm
-
-# Full-featured installation with all optional components
-bash helm-charts.sh --cloud gcp --version <version> --mode all --optional litellm,pgadmin
-```
-
-  </TabItem>
   <TabItem value="azure" label="Azure">
 
 ```bash
@@ -315,6 +298,23 @@ bash helm-charts.sh --cloud azure --version <version> --mode recommended --optio
 
 # Enterprise installation with all optional components
 bash helm-charts.sh --cloud azure --version <version> --mode all --optional litellm,pgadmin
+```
+
+  </TabItem>
+  <TabItem value="gcp" label="GCP">
+
+```bash
+# Standard installation with all core components
+bash helm-charts.sh --cloud gcp --version <version> --mode all
+
+# With database management tools
+bash helm-charts.sh --cloud gcp --version <version> --mode all --optional pgadmin
+
+# With LiteLLM for multi-model AI testing
+bash helm-charts.sh --cloud gcp --version <version> --mode recommended --optional litellm
+
+# Full-featured installation with all optional components
+bash helm-charts.sh --cloud gcp --version <version> --mode all --optional litellm,pgadmin
 ```
 
   </TabItem>
@@ -376,4 +376,4 @@ Add an A record: `nats-codemie.airun.example.com → <nats-ip>`
 
 ## Next Steps
 
-After successful deployment, proceed to **[Accessing Applications](../../aws/kubernetes/accessing-applications.md)** to verify access and complete initial configuration.
+After successful deployment, proceed to **[Accessing Applications](../../accessing-applications.mdx)** to verify access and complete initial configuration.
