@@ -183,9 +183,9 @@ On first launch, Home shows a checklist of four steps: sign in, choose how CodeM
 
 3. Answer the questions for the chosen option, such as the Ollama base URL, and click **Continue**. Finished steps are marked with a check mark.
 
-The profile is saved when the last step succeeds.
+The profile is saved right after the profile name is entered, before the questions about making it active and installing Claude Code.
 
-If a step fails, setup stops and explains the cause. The message states that nothing has been saved. Fix the cause (for example, start Ollama) and click **Try again**. **Show details** displays the technical output.
+If a step fails before the profile is saved, setup stops and explains the cause, and nothing is saved. Fix the cause (for example, start Ollama) and click **Try again**. **Show details** displays the technical output.
 
 ![Setup stopped because Ollama is not running](./images/connect-setup-failure.png)
 
@@ -213,7 +213,7 @@ Health runs the same checks as `codemie doctor`, grouped into the CodeMie accoun
 
 ![Health screen](./images/connect-health.png)
 
-Every failed check includes a **What to do** remedy with the command to run and, where possible, a button that performs it, such as **Set up CodeMie** for a missing configuration. **Open today's log** opens today's CodeMie debug log.
+A failed check shows a **What to do** remedy where one is known, with the command to run and, where possible, a button that performs it, such as **Set up CodeMie** for a missing configuration. **Open today's log** opens today's CodeMie debug log.
 
 ### See what CodeMie ran
 
