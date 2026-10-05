@@ -423,14 +423,30 @@ const sidebars: SidebarsConfig = {
           collapsed: true,
           items: [
             {
-              type: 'doc',
-              id: 'admin/deployment/architecture',
+              type: 'category',
               label: 'Architecture',
+              link: {
+                type: 'doc',
+                id: 'admin/deployment/architecture/architecture-overview',
+              },
+              collapsed: true,
+              items: [
+                'admin/deployment/architecture/architecture-kubernetes',
+                'admin/deployment/architecture/architecture-on-vm',
+              ],
             },
             {
-              type: 'doc',
-              id: 'admin/deployment/prerequisites',
+              type: 'category',
               label: 'Prerequisites',
+              link: {
+                type: 'doc',
+                id: 'admin/deployment/prerequisites/prerequisites-overview',
+              },
+              collapsed: true,
+              items: [
+                'admin/deployment/prerequisites/prerequisites-kubernetes',
+                'admin/deployment/prerequisites/prerequisites-on-vm',
+              ],
             },
             {
               type: 'category',
