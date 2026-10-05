@@ -6,4 +6,4 @@ The **what CodeMie ran** bar at the bottom of the window lists every command the
 
 ## Sources
 
-- [CodeMie CLI](https://codemie-ai.github.io/docs/user-guide/codemie-cli/#using-codemie-connect)
+- [CodeMie CLI](https://docs.codemie.ai/user-guide/codemie-cli/#using-codemie-connect)

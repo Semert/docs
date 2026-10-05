@@ -168,7 +168,7 @@ For detailed configuration, authentication methods, troubleshooting, and advance
 
 ## Using CodeMie Connect
 
-CodeMie Connect sets up CodeMie CLI, manages the coding tools, and checks that everything works. The sidebar has Home, Tools, Connections, and Health. Tools are run from a terminal; the app only sets them up.
+CodeMie Connect sets up CodeMie CLI, manages the coding tools, and checks that everything works. The sidebar has Home, Tools, Connections, Health, and CLI usage analytics. Tools are run from a terminal; the app only sets them up.
 
 ### Set up CodeMie
 
@@ -176,7 +176,7 @@ On first launch, Home shows a checklist of four steps: sign in, choose how CodeM
 
 ![CodeMie Connect Home checklist](./images/connect-home-checklist.png)
 
-1. Click **Sign in**. The browser opens for sign-in with the EPAM account.
+1. Click **Sign in** to start guided setup. The browser opens for sign-in only when CodeMie SSO is chosen in the next step.
 2. Pick how CodeMie reaches a model: CodeMie SSO (recommended), LiteLLM, AWS Bedrock, Anthropic Subscription, Moonshot Subscription, or Ollama. The choice can be changed later.
 
    ![Choosing how CodeMie reaches a model](./images/connect-setup-provider-choice.png)
@@ -191,7 +191,9 @@ If a step fails, setup stops and explains the cause. The message states that not
 
 ### Home
 
-After setup, Home replaces the checklist with status cards for the profile and installed tools. If the profile is broken, Home reports it and offers **Set up CodeMie** to create it again.
+After setup, Home replaces the checklist with four status cards: Profile, Health, Tools, and Connections. The Profile card has a **Set up again** button that re-runs setup.
+
+If the saved profile stops working, Home shows "Your profile is no longer working" and marks the profile as needing attention.
 
 ### Install, update, and remove tools
 
@@ -200,7 +202,7 @@ Tools lists every available tool and how many are installed. CodeMie Code is bui
 ![Tools list](./images/connect-tools-list.png)
 
 - **Install**: click **Install** next to a tool. The button shows **Installing…** until the installation finishes.
-- **Update**: when a newer version of an installed tool is available, an update action appears next to it.
+- **Update**: when a newer version of an installed tool is available, click **Update** next to it. The button shows **Updating…** while the update runs.
 - **Remove**: an installed tool shows its version and a **Remove** button.
 
 ![Installed tool with a Remove button](./images/connect-tools-installed.png)
@@ -211,7 +213,7 @@ Health runs the same checks as `codemie doctor`, grouped into the CodeMie accoun
 
 ![Health screen](./images/connect-health.png)
 
-Every failed check includes a **What to do** remedy with the command to run and, where possible, a button that performs it, such as **Set up CodeMie** for a missing configuration. Today's log of checks is available on the same screen.
+Every failed check includes a **What to do** remedy with the command to run and, where possible, a button that performs it, such as **Set up CodeMie** for a missing configuration. **Open today's log** opens today's CodeMie debug log.
 
 ### See what CodeMie ran
 
